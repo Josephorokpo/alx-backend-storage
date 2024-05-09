@@ -1,5 +1,15 @@
 -- Create a function SafeDiv that handles division by zero
-CREATE FUNCTION SafeDiv(a INT, b INT) RETURNS DECIMAL(10, 2)
+
+CREATE FUNCTION SafeDiv(a INT, b INT)
+RETURNS DECIMAL(10, 2)
 BEGIN
-    RETURN CASE WHEN b = 0 THEN 0 ELSE a / b END;
+    DECLARE result DECIMAL(10, 2);
+    
+    IF b = 0 THEN
+        SET result = 0;
+    ELSE
+        SET result = a / b;
+    END IF;
+    
+    RETURN result;
 END;
