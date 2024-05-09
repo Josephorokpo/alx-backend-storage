@@ -1,24 +1,31 @@
 -- Create a stored procedure to compute and store the average weighted score for a student
 DELIMITER $$
 
-CREATE PROCEDURE ComputeAverageWeightedScoreForUser(IN t_user_id INT)
+DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUser;
+
+DELIMITER //
+
+CREATE PROCEDURE ComputeAverageWeightedScoreForUser(user_id INT)
 BEGIN
-    DECLARE total_weight DECIMAL(10, 2);
-    DECLARE weighted_sum DECIMAL(10, 2);
+  DECLARE tot_weighted_score INT DEFAULT 0;
+  DECLARE tot_weight INT DEFAULT 0;
 
-    -- Calculate total weight and weighted sum
-    SELECT SUM(weight) INTO total_weight
-    FROM scores
-    WHERE user_id = t_user_id;
+  SELECT SUM(corrections.score * projects.weight) INTO tot_weighted_score
+  FROM corrections 
+  INNER JOIN projects ON corrections.project_id = projects.id
+  WHERE corrections.user_id = user_id;
 
-    SELECT SUM(score * weight) INTO weighted_sum
-    FROM scores
-    WHERE user_id = t_user_id;
+  SELECT SUM(projects.weight) INTO tot_weight FROM corrections
+  INNER JOIN projects ON corrections.project_id = projects.id
+  WHERE corrections.user_id = user_id;
 
-    -- Calculate average weighted score
-    INSERT INTO user_weighted_scores (user_id, average_weighted_score)
-    VALUES (t_user_id, weighted_sum / total_weight)
-    ON DUPLICATE KEY UPDATE average_weighted_score = VALUES(average_weighted_score);
-END $$
-
-DELIMITER ;
+  IF tot_weight = 0 THEN
+    UPDATE users
+    SET users.average_score = 0
+    WHERE users.id = user_id;
+  ELSE
+    UPDATE users
+    SET users.average_score = tot_weighted_score / tot_weight
+    WHERE users.id = user_id;
+    END IF;
+END //
