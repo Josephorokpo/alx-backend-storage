@@ -1,5 +1,5 @@
--- Create a stored procedure to compute and store the average weighted score for a student
-DELIMITER $$
+-- script that creates a stored procedure ComputeAverageWeightedScoreForUser
+-- that computes and store the average weighted score for a student
 
 DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUser;
 
