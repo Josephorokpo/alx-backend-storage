@@ -18,7 +18,7 @@ BEGIN
     -- Calculate average weighted score
     INSERT INTO user_weighted_scores (user_id, average_weighted_score)
     VALUES (t_user_id, weighted_sum / total_weight)
-    ON DUPLICATE KEY UPDATE average_weighted_score = weighted_sum / total_weight;
+    ON DUPLICATE KEY UPDATE average_weighted_score = VALUES(average_weighted_score);
 END $$
 
 DELIMITER ;
