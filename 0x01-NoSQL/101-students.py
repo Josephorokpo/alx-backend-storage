@@ -19,19 +19,18 @@ def top_students(mongo_collection):
         by average score (descending).
         Each student document includes an additional key 'averageScore'.
     """
-    try:
-        pipeline = [
-            {
-                "$project": {
+    return mongo_collection.aggregate([
+        {
+            "$project":
+                {
                     "name": "$name",
                     "averageScore": {"$avg": "$topics.score"}
                 }
-            },
-            {
-                "$sort": {
+        },
+        {
+            "$sort":
+                {
                     "averageScore": -1
                 }
-            }
-        ]
-        students = list(mongo_collection.aggregate(pipeline))
-        return students
+        }
+    ])
